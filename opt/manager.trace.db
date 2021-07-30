@@ -1,0 +1,11 @@
+2021-07-22 18:43:08 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "DROP TABLE FROM[*] FLOW_BIZ_LINE "; expected "identifier"; SQL statement:
+drop table FROM FLOW_BIZ_LINE [42001-197]
+2021-07-22 18:44:16 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT * FROM FLOW_STEP 
+ALTER TABLE[*] ""FLOW_STEP "" DROP COLUMN ""STEP_TYPE"" "; SQL statement:
+SELECT * FROM FLOW_STEP 
+ALTER TABLE `FLOW_STEP ` drop COLUMN `step_type` [42000-197]
+2021-07-22 18:44:43 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLException: Table "FLOW_STEP " not found; SQL statement:
+ALTER TABLE `FLOW_STEP ` drop COLUMN `step_type` [42102-197]
