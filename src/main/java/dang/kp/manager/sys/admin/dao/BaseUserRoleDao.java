@@ -11,4 +11,6 @@ public interface BaseUserRoleDao extends JpaRepository<BaseUserRole, String> {
     List<BaseUserRole> findByUserId(String userId);
 
     List<BaseUserRole> findByRoleId(String roleId);
+
+    void deleteByUserId(String userId);
 }

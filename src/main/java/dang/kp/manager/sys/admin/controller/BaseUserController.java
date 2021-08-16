@@ -1,8 +1,7 @@
 package dang.kp.manager.sys.admin.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import dang.kp.manager.biz.flow.pojo.FlowStepUser;
-import dang.kp.manager.biz.flow.service.FlowApiService;
+import com.google.common.collect.Lists;
 import dang.kp.manager.common.myenum.MyKey;
 import dang.kp.manager.common.response.PageData;
 import dang.kp.manager.common.response.PageUtils;
@@ -11,14 +10,12 @@ import dang.kp.manager.common.result.ResultUtils;
 import dang.kp.manager.common.utils.BatchUtils;
 import dang.kp.manager.common.utils.DateTimeUtils;
 import dang.kp.manager.common.utils.DigestUtils;
-import dang.kp.manager.sys.admin.dao.BaseRoleDao;
-import dang.kp.manager.sys.admin.dao.BaseUserDao;
-import dang.kp.manager.sys.admin.dao.BaseUserRoleDao;
+import dang.kp.manager.sys.admin.dao.*;
 import dang.kp.manager.sys.admin.dto.LoginDTO;
 import dang.kp.manager.sys.admin.dto.ResetPswdDto;
-import dang.kp.manager.sys.admin.pojo.BaseRole;
-import dang.kp.manager.sys.admin.pojo.BaseUser;
-import dang.kp.manager.sys.admin.pojo.BaseUserRole;
+import dang.kp.manager.sys.admin.dto.SourceFirstDTO;
+import dang.kp.manager.sys.admin.dto.SourceSecondDTO;
+import dang.kp.manager.sys.admin.pojo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -28,22 +25,20 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -57,15 +52,17 @@ import java.util.Objects;
 @Controller
 @RequestMapping("/user")
 public class BaseUserController {
-    @Autowired
-    private BaseUserDao baseUserDao;
-    @Autowired
+    @Resource
     private BaseRoleDao baseRoleDao;
-
-    @Autowired
+    @Resource
+    private BaseUserDao baseUserDao;
+    @Resource
+    private BaseSourceDao baseSourceDao;
+    @Resource
     private BaseUserRoleDao baseUserRoleDao;
-    @Autowired
-    private FlowApiService flowApiService;
+    @Resource
+    private BaseRoleSourceDao baseRoleSourceDao;
+
     /**
      * 功能描述: 登入系统
      *
@@ -76,7 +73,7 @@ public class BaseUserController {
      */
     @RequestMapping("/login")
     @ResponseBody
-    public Map<String, Object> login(HttpServletRequest request, LoginDTO loginDTO, HttpSession session) {
+    public ResultData login(HttpServletRequest request, @RequestBody LoginDTO loginDTO, HttpSession session) {
         log.info("进行登陆{}", JSONObject.toJSONString(loginDTO));
         Map<String, Object> data = new HashMap();
         // 使用 shiro 进行登录
@@ -96,27 +93,18 @@ public class BaseUserController {
             // 登录成功
             BaseUser user = (BaseUser) subject.getPrincipal();
             session.setAttribute("user", user.getUserName());
-            data.put("code", 200);
-            data.put("url", "/home");
-            //data.put("message","登陆成功");
             log.info(user.getUserName() + "登陆成功");
+            return ResultUtils.success("/home");
         } catch (UnknownAccountException e) {
-            data.put("code", 0);
-            data.put("message", userName + "账号不存在");
             log.error(userName + "账号不存在");
-            return data;
+            return ResultUtils.fail(userName + "账号不存在");
         } catch (DisabledAccountException e) {
-            data.put("code", 0);
-            data.put("message", userName + "账号异常");
             log.error(userName + "账号异常");
-            return data;
+            return ResultUtils.fail(userName + "账号异常");
         } catch (AuthenticationException e) {
-            data.put("code", 0);
-            data.put("message", userName + "密码错误");
             log.error(userName + "密码错误");
-            return data;
+            return ResultUtils.fail(userName + "密码错误");
         }
-        return data;
     }
 
     /**
@@ -129,7 +117,7 @@ public class BaseUserController {
      */
     @RequestMapping("/setPswd")
     @ResponseBody
-    public ResultData setPswd(ResetPswdDto param) {
+    public ResultData setPswd(@RequestBody ResetPswdDto param) {
         log.info("进行密码重置");
         if (!StringUtils.equals(param.getPswd(), param.getPwsdAgain())) {
             log.error("两次输入的密码不一致!");
@@ -142,7 +130,7 @@ public class BaseUserController {
         user = this.baseUserDao.getUserByUserName(userName);
         user.setPassword(password);
         this.baseUserDao.save(user);
-        return ResultUtils.fail("修改密码成功!");
+        return ResultUtils.success("修改密码成功!");
     }
 
     /**
@@ -203,7 +191,7 @@ public class BaseUserController {
      */
     @RequestMapping(value = "/setUser", method = RequestMethod.POST)
     @ResponseBody
-    public ResultData save(BaseUser user) {
+    public ResultData save(@RequestBody BaseUser user) {
         log.info("设置用户[新增或更新]！user:" + user);
         if (StringUtils.isBlank(user.getUserId())) {
             if (StringUtils.length(user.getPhone()) != 11) {
@@ -228,7 +216,7 @@ public class BaseUserController {
             return ResultUtils.success("新增成功！");
         } else {
             String userName = user.getUserName();
-            BaseUser old = this.baseUserDao.getOne(user.getUserId());
+            BaseUser old = this.baseUserDao.findById(user.getUserId()).get();
             if (StringUtils.isBlank(user.getPassword())) {
                 user.setPassword("123456");
                 String password = DigestUtils.Md5(userName, user.getPassword());
@@ -242,7 +230,7 @@ public class BaseUserController {
     }
 
     /**
-     * 功能描述: 删除/恢复 用户
+     * 功能描述: 删除 用户
      *
      * @param:
      * @return:
@@ -251,15 +239,62 @@ public class BaseUserController {
      */
     @RequestMapping(value = "/del", method = RequestMethod.POST)
     @ResponseBody
-    public ResultData del(BaseUser param) {
-        log.info("删除/恢复用户！param:{}", JSONObject.toJSONString(param));
-        this.flowApiService.disableFlow(FlowStepUser.builder().stepId(param.getUserId()).build());
+    public ResultData del(@RequestBody BaseUser param) {
+        log.info("删除！param:{}", JSONObject.toJSONString(param));
         this.baseUserDao.deleteById(param.getUserId());
-        // 删除关联数据
-        List<BaseUserRole> list = this.baseUserRoleDao.findByUserId(param.getUserId());
-        if (!CollectionUtils.isEmpty(list)) {
-            this.baseUserRoleDao.deleteInBatch(list);
+        this.baseUserRoleDao.deleteByUserId(param.getUserId());
+        return ResultUtils.success("success");
+    }
+
+    /**
+     * 功能描述: 获取登陆用户的
+     *
+     * @param:
+     * @return:
+     * @auther: youqing
+     * @date: 2018/12/4 9:48
+     */
+    @GetMapping("/role/source")
+    @ResponseBody
+    public ResultData getUserSource() {
+        BaseUser user = (BaseUser) SecurityUtils.getSubject().getPrincipal();
+        List<SourceFirstDTO> sourceList = Lists.newArrayList();
+        // 查询角色
+        List<BaseUserRole> userRoles = this.baseUserRoleDao.findByUserId(user.getUserId());
+        if (CollectionUtils.isEmpty(userRoles)) {
+            return ResultUtils.success(sourceList);
         }
-        return ResultUtils.success("操作成功！");
+        // 获取角色Id列表
+        List<String> roleIds = userRoles.stream().map(BaseUserRole::getRoleId).collect(Collectors.toList());
+        // 获取关联关系
+        List<BaseRoleSource> roleSources = this.baseRoleSourceDao.findByRoleIdIn(roleIds);
+        // 获取资源id列表
+        List<String> sourceIds = roleSources.stream().map(BaseRoleSource::getSourceId).collect(Collectors.toList());
+        // 获取资源列表
+        List<BaseSource> sources = this.baseSourceDao.findBySourceIdIn(sourceIds);
+        // 获取二级资源列表
+        List<BaseSource> sourceChildren = this.baseSourceDao.findByPidInOrderByLineIndex(sourceIds);
+        // 二级资源分组
+        Map<String, List<BaseSource>> sourceGroup =sourceChildren.stream().collect(Collectors.groupingBy(BaseSource::getPid));
+        // 遍历
+        for (BaseSource source : sources) {
+            // 获取二级菜单
+            List<BaseSource> children = sourceGroup.get(source.getSourceId());
+            if (CollectionUtils.isEmpty(children)) {
+                continue;
+            }
+            List<SourceSecondDTO> items = Lists.newArrayList();
+            for (BaseSource child : children) {
+                SourceSecondDTO item = new SourceSecondDTO();
+                BeanUtils.copyProperties(child, item);
+                items.add(item);
+            }
+            // 获取1级菜单
+            SourceFirstDTO sourceDTO = new SourceFirstDTO();
+            BeanUtils.copyProperties(source, sourceDTO);
+            sourceDTO.setChildrens(items);
+            sourceList.add(sourceDTO);
+        }
+        return ResultUtils.success(sourceList);
     }
 }

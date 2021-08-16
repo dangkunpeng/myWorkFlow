@@ -20,32 +20,29 @@ import dang.kp.manager.sys.admin.dao.BaseUserDao;
 import dang.kp.manager.sys.admin.pojo.BaseUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Slf4j
 @Controller
 @RequestMapping("/flowApi")
 public class FlowApiController {
-    @Autowired
+    @Resource
     private BaseUserDao baseUserDao;
-    @Autowired
+    @Resource
     private FlowBizLineDao flowBizLineDao;
-    @Autowired
+    @Resource
     private FlowLineDao flowLineDao;
-    @Autowired
+    @Resource
     private FlowStepDao flowStepDao;
-    @Autowired
+    @Resource
     private FlowBizLogDao flowBizLogDao;
-    @Autowired
+    @Resource
     private FlowApiService flowApiService;
 
     /**
@@ -75,7 +72,7 @@ public class FlowApiController {
     }
 
     /**
-     * 功能描述: 获取角色列表
+     * 功能描述: 获取列表
      *
      * @param:
      * @return:
@@ -115,7 +112,7 @@ public class FlowApiController {
     }
 
     /**
-     * 功能描述: 获取角色列表
+     * 功能描述: 获取列表
      *
      * @param:
      * @return:
@@ -156,7 +153,7 @@ public class FlowApiController {
 
     @PostMapping("/start")
     @ResponseBody
-    public ResultData start(FlowApiDto param) {
+    public ResultData start(@RequestBody FlowApiDto param) {
         log.info("flow start. param = {}", JSONObject.toJSONString(param));
         return this.flowApiService.startFlow(param);
     }
@@ -164,14 +161,14 @@ public class FlowApiController {
 
     @PostMapping("/vote")
     @ResponseBody
-    public ResultData vote(FlowApiDto param) {
+    public ResultData vote(@RequestBody FlowApiDto param) {
         log.info("flow vote. param = {}", JSONObject.toJSONString(param));
         return this.flowApiService.vote(param);
     }
 
     @PostMapping("/forceNext")
     @ResponseBody
-    public ResultData forceNext(FlowApiDto param) {
+    public ResultData forceNext(@RequestBody FlowApiDto param) {
         log.info("flow forceNext. param = {}", JSONObject.toJSONString(param));
 
         return this.flowApiService.forceNext(param);
@@ -179,7 +176,7 @@ public class FlowApiController {
 
     @PostMapping("/forceTerminate")
     @ResponseBody
-    public ResultData forceTerminate(FlowApiDto param) {
+    public ResultData forceTerminate(@RequestBody FlowApiDto param) {
         log.info("flow forceTerminate. param = {}", JSONObject.toJSONString(param));
         return this.flowApiService.forceTerminate(param);
     }

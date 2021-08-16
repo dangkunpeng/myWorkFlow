@@ -36,16 +36,25 @@ public class DateTimeUtils {
      * @return
      */
     public static Long getLastPositiveDate(Integer overDueDays) {
-        return lastSomeDay(overDueDays).getTime();
+        return getSomeDay(overDueDays).getTime();
     }
 
-    public static String getSomeDay(Integer days) {
-        return SDF_SIMPLE.format(lastSomeDay(days));
+    public static String getLastSomeDay(Integer days) {
+        return SDF_YYYYMMDD.format(getSomeDay(0 - days));
     }
 
-    public static Date lastSomeDay(Integer days) {
+    public static Date getSomeDay(Integer days) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, 0 - days);
+        calendar.add(Calendar.DATE, days);
+        return calendar.getTime();
+    }
+
+    public static String getSomeYears(Integer years) {
+        return SDF_FULL_SHOW.format(nextSomeYears(years));
+    }
+    public static Date nextSomeYears(Integer years) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, years);
         return calendar.getTime();
     }
 
@@ -64,6 +73,22 @@ public class DateTimeUtils {
     public static String now() {
         String date = SDF_FULL_SHOW.format(System.currentTimeMillis());
         return date;
+    }
+    /**
+     * 功能描述:
+     *
+     * @param: 获取当前系统时间 yyyy-MM-dd HH:mm:ss
+     * @return:
+     * @auther: youqing
+     * @date: 2018/5/26 9:59
+     */
+    public static String nowSimple() {
+        String date = SDF_YYYYMMDD.format(System.currentTimeMillis());
+        return date;
+    }
+    public static int nowWeekDay() {
+        Calendar cal = Calendar.getInstance();
+        return cal.get(Calendar.DAY_OF_WEEK);
     }
 
     public static Long timeCost(String timeStart) {

@@ -14,27 +14,30 @@ import dang.kp.manager.common.utils.DateTimeUtils;
 import dang.kp.manager.common.utils.UserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional
 public class FlowApiService {
-    @Autowired
+    @Resource
     private FlowStepDao flowStepDao;
-    @Autowired
+    @Resource
     private FlowStepUserDao flowStepUserDao;
-    @Autowired
+    @Resource
     private FlowBizLogDao flowBizLogDao;
-    @Autowired
+    @Resource
     private FlowBizLineDao flowBizLineDao;
-    @Autowired
+    @Resource
     private FlowLineDao flowLineDao;
 
 
@@ -234,9 +237,14 @@ public class FlowApiService {
         return this.next(bizLine);
     }
 
+    /**
+     * 工作流下一步
+     * @param bizLine
+     * @return
+     */
     private ResultData next(FlowBizLine bizLine) {
         // 获取当前步骤
-        FlowStep nowStep = this.flowStepDao.getOne(bizLine.getStepId());
+        FlowStep nowStep = this.flowStepDao.findById(bizLine.getStepId()).get();
         // 获取下一步
         FlowStep nextStep = this.flowStepDao.getFirstByLineIdAndLineIndexGreaterThanOrderByLineIndex(nowStep.getLineId(), nowStep.getLineIndex());
 
@@ -293,7 +301,7 @@ public class FlowApiService {
      */
     private void generateLogs(FlowBizLine bizLine) {
         // 查找待处理的人元
-        FlowStep step = this.flowStepDao.getOne(bizLine.getStepId());
+        FlowStep step = this.flowStepDao.findById(bizLine.getStepId()).get();
         // 根据node查找待处理的人员
         List<FlowStepUser> userList = this.flowStepUserDao.findByStepId(step.getStepId());
         // 日志列表
@@ -316,13 +324,18 @@ public class FlowApiService {
         this.flowBizLogDao.saveAll(logList);
     }
 
+    /**
+     * 检查工作流是否合规
+     * @param lineId
+     * @return
+     */
     public ResultData checkFlow(String lineId) {
         if (StringUtils.isBlank(lineId)) {
             log.info("主键不能为空{}", lineId);
             return ResultUtils.fail("主键不能为空");
         }
         ResultData resultData = this.checkFlowStep(lineId);
-        FlowLine entity = this.flowLineDao.getOne(lineId);
+        FlowLine entity = this.flowLineDao.findById(lineId).get();
 
         if (StringUtils.equals(resultData.getCode(), IStatusMessage.SystemStatus.ERROR.getCode())) {
             entity.setStatus(MyStatus.negative.getValue());
@@ -333,6 +346,7 @@ public class FlowApiService {
 
         return resultData;
     }
+
     /**
      * 检查工作流是否合规
      *
@@ -386,38 +400,135 @@ public class FlowApiService {
         return ResultUtils.success(lineId);
     }
 
-    public ResultData disableFlow(FlowStepUser param) {
-        log.info("disableFlow {}", JSONObject.toJSONString(param));
-        if (StringUtils.isAllBlank(param.getUserId(), param.getStepId())) {
-            log.error("参数错误");
-            return ResultUtils.fail("参数错误");
-        }
-        List<String> stepIds = Lists.newArrayList();
-        if (StringUtils.isNotBlank(param.getStepId())) {
-            stepIds.add(param.getStepId());
-        } else {
-            List<FlowStepUser> stepUserList = this.flowStepUserDao.findByUserId(param.getUserId());
-            if (!CollectionUtils.isEmpty(stepUserList)) {
-                stepIds.addAll(stepUserList.stream().map(FlowStepUser::getStepId).collect(Collectors.toList()));
-            }
-        }
-        if (CollectionUtils.isEmpty(stepIds)) {
+    /**
+     * 禁用工作流
+     *
+     * @param stepId
+     * @return
+     */
+    public ResultData disableFlowByStepId(String stepId) {
+        log.info("disableFlow {}", stepId);
+        if (StringUtils.isBlank(stepId)) {
             return ResultUtils.success("success");
         }
-        List<FlowStep> stepList = this.flowStepDao.getByStepIdIn(stepIds);
-        if (CollectionUtils.isEmpty(stepList)) {
+        FlowStep step = this.flowStepDao.findById(stepId).get();
+        if (Objects.isNull(step)) {
             return ResultUtils.success("success");
         }
-        List<String> lineIds = stepList.stream().map(FlowStep::getLineId).distinct().collect(Collectors.toList());
-        List<FlowLine> lineList = this.flowLineDao.getByLineIdIn(lineIds);
-        if (CollectionUtils.isEmpty(lineList)) {
+        FlowLine line = this.flowLineDao.findById(step.getLineId()).get();
+        if (Objects.isNull(line)) {
             return ResultUtils.success("success");
         }
-        for (FlowLine flowLine : lineList) {
-            // 禁用
-            flowLine.setStatus(MyStatus.negative.getValue());
-        }
-        this.flowLineDao.saveAll(lineList);
+        // 禁用
+        line.setStatus(MyStatus.negative.getValue());
+        log.info("disableFlow {}", JSONObject.toJSONString(line));
+        this.flowLineDao.save(line);
         return ResultUtils.success("success");
     }
+
+    /**
+     * 步骤是否已使用
+     *
+     * @param stepId
+     * @return
+     */
+    public Boolean stepInUse(String stepId) {
+        // 查找待处理的步骤
+        FlowStep step = this.flowStepDao.findById(stepId).get();
+        if (Objects.isNull(step)) {
+            return false;
+        }
+        return this.flowBizLineDao.countByLineId(step.getLineId()) > 0;
+    }
+
+    /**
+     * 按lineId删除记录
+     *
+     * @param lineId
+     * @return
+     */
+    public ResultData deleteByLineId(String lineId) {
+        if (StringUtils.isBlank(lineId)) {
+            log.info("主键不能为空");
+            return ResultUtils.fail("主键不能为空");
+        }
+        Boolean used = this.flowBizLineDao.countByLineId(lineId) > 0;
+        if (used) {
+            log.info("已使用,不可删除");
+            return ResultUtils.fail("已使用,不可删除");
+        }
+        this.flowLineDao.deleteById(lineId);
+
+        List<FlowStep> stepList = this.flowStepDao.getByLineIdOrderByLineIndex(lineId);
+        if (CollectionUtils.isEmpty(stepList)) {
+            return ResultUtils.success(lineId);
+        }
+        log.info("删除步骤{}", JSONObject.toJSONString(stepList));
+        this.flowStepDao.deleteAll(stepList);
+        List<String> stepIds = stepList.stream().map(FlowStep::getStepId).collect(Collectors.toList());
+        List<FlowStepUser> stepUserList = this.flowStepUserDao.findByStepIdIn(stepIds);
+        if (CollectionUtils.isEmpty(stepUserList)) {
+            return ResultUtils.success(lineId);
+        }
+        log.info("删除步骤和人员{}", JSONObject.toJSONString(stepUserList));
+        this.flowStepUserDao.deleteAll(stepUserList);
+        return ResultUtils.success(lineId);
+    }
+
+    /**
+     * 按stepId删除记录
+     *
+     * @param stepId
+     * @return
+     */
+    public ResultData deleteByStepId(String stepId) {
+        if (stepInUse(stepId)) {
+            log.info("已使用,不可删除");
+            return ResultUtils.fail("已使用,不可删除");
+        }
+        if (StringUtils.isBlank(stepId)) {
+            log.info("主键不能为空");
+            return ResultUtils.fail("主键不能为空");
+        }
+        log.info("禁用所在工作流{}", stepId);
+        this.disableFlowByStepId(stepId);
+        log.info("删除当前记录{}", stepId);
+        this.flowStepDao.deleteById(stepId);
+        List<FlowStepUser> stepUserList = this.flowStepUserDao.findByStepId(stepId);
+        if (CollectionUtils.isEmpty(stepUserList)) {
+            return ResultUtils.success(stepId);
+        }
+        log.info("删除步骤和人员{}", JSONObject.toJSONString(stepUserList));
+        this.flowStepUserDao.deleteAll(stepUserList);
+        return ResultUtils.success(stepId);
+    }
+
+    /**
+     * 按stepUserId删除记录
+     *
+     * @param stepUserId
+     * @return
+     */
+    public ResultData deleteByStepUserId(String stepUserId) {
+        if (StringUtils.isBlank(stepUserId)) {
+            log.info("主键不能为空");
+            return ResultUtils.fail("主键不能为空");
+        }
+        Optional<FlowStepUser> flowStepUser = this.flowStepUserDao.findById(stepUserId);
+        if (flowStepUser.isPresent()) {
+            String stepId = flowStepUser.get().getStepId();
+            if (this.stepInUse(stepId)) {
+                log.info("已使用,不可删除");
+                return ResultUtils.fail("已使用,不可删除");
+            }
+            log.info("禁用所在工作流{}", stepUserId);
+            this.disableFlowByStepId(stepId);
+            log.info("删除当前记录{}", stepUserId);
+            this.flowStepUserDao.deleteById(stepUserId);
+        }
+
+
+        return ResultUtils.success(stepUserId);
+    }
+
 }

@@ -16,15 +16,12 @@ import dang.kp.manager.sys.admin.pojo.BaseRoleSource;
 import dang.kp.manager.sys.admin.pojo.BaseSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -38,11 +35,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/roleSource")
 public class BaseRoleSourceController {
-    @Autowired
+    @Resource
     private BaseRoleDao baseRoleDao;
-    @Autowired
+    @Resource
     private BaseSourceDao baseSourceDao;
-    @Autowired
+    @Resource
     private BaseRoleSourceDao baseRoleSourceDao;
 
     /**
@@ -115,7 +112,7 @@ public class BaseRoleSourceController {
      */
     @PostMapping("/setRoleSource")
     @ResponseBody
-    public ResultData save(BaseRoleSource source) {
+    public ResultData save(@RequestBody BaseRoleSource source) {
         log.info("设置权限[新增或更新]！param:{}", JSONObject.toJSONString(source));
         if (StringUtils.isBlank(source.getRoleSourceId())) {
             //新增权限
@@ -141,7 +138,7 @@ public class BaseRoleSourceController {
      */
     @PostMapping("/del")
     @ResponseBody
-    public ResultData del(BaseRoleSource source) {
+    public ResultData del(@RequestBody BaseRoleSource source) {
         log.info("删除！param:{}", JSONObject.toJSONString(source));
         //删除服务类目类型
         // 删除权限菜单

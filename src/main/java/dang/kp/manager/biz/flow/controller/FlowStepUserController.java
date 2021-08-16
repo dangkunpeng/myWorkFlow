@@ -18,15 +18,12 @@ import dang.kp.manager.sys.admin.dao.BaseUserDao;
 import dang.kp.manager.sys.admin.pojo.BaseUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Slf4j
@@ -34,19 +31,19 @@ import java.util.List;
 @RequestMapping("/flowStepUser")
 public class FlowStepUserController {
 
-    @Autowired
+    @Resource
     private FlowStepUserDao flowStepUserDao;
 
-    @Autowired
+    @Resource
     private FlowStepDao flowStepDao;
 
-    @Autowired
+    @Resource
     private BaseUserDao baseUserDao;
-    @Autowired
+    @Resource
     private FlowApiService flowApiService;
 
     /**
-     * 跳转到角色管理
+     * 跳转到管理页面
      *
      * @return
      */
@@ -65,7 +62,7 @@ public class FlowStepUserController {
 
     @PostMapping("/save")
     @ResponseBody
-    public ResultData save(FlowStepUser param) {
+    public ResultData save(@RequestBody FlowStepUser param) {
         log.info("save. param = {}", JSONObject.toJSONString(param));
         if (StringUtils.isBlank(param.getStepUserId())) {
             param.setStepUserId(BatchUtils.getKey(MyKey.FlowStepUser));
@@ -76,20 +73,13 @@ public class FlowStepUserController {
 
     @PostMapping("/delete")
     @ResponseBody
-    public ResultData delete(FlowStepUser param) {
+    public ResultData delete(@RequestBody FlowStepUser param) {
         log.info("delete. param = {}", JSONObject.toJSONString(param));
-        if (StringUtils.isBlank(param.getStepUserId())) {
-            log.info("主键不能为空");
-            return ResultUtils.fail("主键不能为空");
-        }
-        FlowStepUser flowStepUser = this.flowStepUserDao.getOne(param.getStepUserId());
-        this.flowApiService.disableFlow(FlowStepUser.builder().stepId(flowStepUser.getStepId()).build());
-        this.flowStepUserDao.delete(param);
-        return ResultUtils.success(param);
+        return this.flowApiService.deleteByStepUserId(param.getStepUserId());
     }
 
     /**
-     * 功能描述: 获取角色列表
+     * 功能描述: 获取列表
      *
      * @param:
      * @return:

@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface FlowBizLineDao extends JpaRepository<FlowBizLine, String> {
 
     FlowBizLine findByBizIdAndStatus(String bizId, String status);
+
+    Integer countByLineId(String lineId);
 }

@@ -17,15 +17,12 @@ import dang.kp.manager.sys.admin.pojo.BaseUserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -39,15 +36,15 @@ import java.util.List;
 @Controller
 @RequestMapping("/role")
 public class BaseRoleController {
-    @Autowired
+    @Resource
     private BaseRoleDao baseRoleDao;
-    @Autowired
+    @Resource
     private BaseUserRoleDao baseUserRoleDao;
-    @Autowired
+    @Resource
     private BaseRoleSourceDao baseRoleSourceDao;
 
     /**
-     * 跳转到角色管理
+     * 跳转到管理页面
      *
      * @return
      */
@@ -58,7 +55,7 @@ public class BaseRoleController {
     }
 
     /**
-     * 功能描述: 获取角色列表
+     * 功能描述: 获取列表
      *
      * @param:
      * @return:
@@ -103,7 +100,7 @@ public class BaseRoleController {
      */
     @PostMapping("/setRole")
     @ResponseBody
-    public ResultData save(BaseRole role) {
+    public ResultData save(@RequestBody BaseRole role) {
         log.info("设置角色[新增或更新]！role:" + role);
         if (StringUtils.isBlank(role.getRoleId())) {
             //新增角色
@@ -112,7 +109,7 @@ public class BaseRoleController {
             return ResultUtils.success("新增角色成功！");
         } else {
             //修改角色
-            BaseRole old = this.baseRoleDao.getOne(role.getRoleId());
+            BaseRole old = this.baseRoleDao.findById(role.getRoleId()).get();
             BeanUtils.copyProperties(role, old, MyConstants.SYSTEM_FIELDS);
             this.baseRoleDao.save(old);
             log.info("角色[更新]，结果=更新成功！");
@@ -130,7 +127,7 @@ public class BaseRoleController {
      */
     @PostMapping("/del")
     @ResponseBody
-    public ResultData del(BaseRole param) {
+    public ResultData del(@RequestBody BaseRole param) {
         log.info("删除/恢复角色！param:{}", JSONObject.toJSONString(param));
         this.baseRoleDao.deleteById(param.getRoleId());
         // 删除关联数据

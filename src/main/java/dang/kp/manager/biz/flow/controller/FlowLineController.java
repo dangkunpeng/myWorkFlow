@@ -8,35 +8,32 @@ import dang.kp.manager.common.myenum.MyKey;
 import dang.kp.manager.common.myenum.MyStatus;
 import dang.kp.manager.common.response.PageData;
 import dang.kp.manager.common.response.PageUtils;
-import dang.kp.manager.common.result.IStatusMessage;
 import dang.kp.manager.common.result.ResultData;
 import dang.kp.manager.common.result.ResultUtils;
 import dang.kp.manager.common.utils.BatchUtils;
 import dang.kp.manager.common.utils.DateTimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 @Slf4j
 @Controller
 @RequestMapping("/flowLine")
 public class FlowLineController {
 
-    @Autowired
+    @Resource
     private FlowLineDao flowLineDao;
 
-    @Autowired
+    @Resource
     private FlowApiService flowApiService;
 
     /**
-     * 功能描述: 获取角色列表
+     * 功能描述: 获取列表
      *
      * @param:
      * @return:
@@ -85,7 +82,7 @@ public class FlowLineController {
 
     @PostMapping("/save")
     @ResponseBody
-    public ResultData save(FlowLine param) {
+    public ResultData save(@RequestBody FlowLine param) {
         log.info("save. param = {}", JSONObject.toJSONString(param));
         if (StringUtils.isBlank(param.getLineId())) {
             param.setLineId(BatchUtils.getKey(MyKey.FlowLine));
@@ -97,19 +94,15 @@ public class FlowLineController {
 
     @PostMapping("/delete")
     @ResponseBody
-    public ResultData delete(FlowLine param) {
+    public ResultData delete(@RequestBody FlowLine param) {
         log.info("delete. param = {}", JSONObject.toJSONString(param));
-        if (StringUtils.isBlank(param.getLineId())) {
-            log.info("主键不能为空");
-            return ResultUtils.fail("主键不能为空");
-        }
-        this.flowLineDao.delete(param);
-        return ResultUtils.success(param);
+
+        return this.flowApiService.deleteByLineId(param.getLineId());
     }
 
     @PostMapping("/check")
     @ResponseBody
-    public ResultData check(FlowLine param) {
+    public ResultData check(@RequestBody FlowLine param) {
         log.info("check. param = {}", JSONObject.toJSONString(param));
 
         return this.flowApiService.checkFlow(param.getLineId());

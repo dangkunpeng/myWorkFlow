@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org"
+       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+       xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head th:include="layout :: htmlhead" th:with="title='用户管理'"></head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+
+    <div class="layui-body" style="margin: 1%">
+
+        <form id="userSearch" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input id="userNameSearch" name="userName" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+                <label class="layui-form-label">手机号</label>
+                <div class="layui-input-inline">
+                    <input id="userPhoneSearch" name="phone" autocomplete="off" class="layui-input" type="text" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                           onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                </div>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                <button class="layui-btn"  lay-submit="" lay-filter="searchSubmit">查询</button>
+                <button class="layui-btn layui-btn-normal" type="button" onclick="addUser()">新增</button>
+            </div>
+        </form>
+
+        <!--<hr class="layui-bg-blue"/>-->
+        <hr class="layui-bg-black"/>
+
+        <div th:replace="fragments/currentUser :: userId"></div>
+        <table id="uesrList" lay-filter="userTable"></table>
+
+        <script type="text/html" id="optBar">
+            <a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+        </script>
+    </div>
+
+
+    <!--添加或编辑用户-->
+    <div id="setUser" class="layer_self_wrap" style="display:none;">
+        <form id="userForm" lay-filter="userForm" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <input id="pageNum" type="hidden" name="pageNum"/>
+            <input id="userId" type="hidden" name="userId"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-block">
+                    <input id="userName" name="userName" lay-verify="required" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">手机号</label>
+                <div class="layui-input-block">
+                    <input id="phone" name="phone" lay-verify="required" autocomplete="off" class="layui-input" type="text" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                           onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-block">
+                    <input id="password" name="password" autocomplete="off" class="layui-input" type="password" placeholder="请填写6位以上的密码.默认初始密码：123456" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="toolBtn" >
+                    <button class="layui-btn"  lay-submit="" lay-filter="userSubmit">提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/common/dateUtils.js"></script>
+    <script src="/js/sys/userManage.js"></script>
+    <div layout:fragment="pageJavascript" th:unless="${errorMessage}">
+        <!-- BEGIN PAGE LEVEL SCRIPTS -->
+        <!-- nth-tabs-->
+        <script th:inline="javascript">
+            var roleList = [];
+                roleList = [[${roleList}]];
+            var roleMap = {};
+            roleList.forEach(function (item) {
+                roleMap[item.roleId] = item.roleName;
+            });
+        </script>
+        </div>
+</div>
+</body>
+</html>

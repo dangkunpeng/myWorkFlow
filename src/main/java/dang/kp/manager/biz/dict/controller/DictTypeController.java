@@ -11,22 +11,19 @@ import dang.kp.manager.common.result.ResultUtils;
 import dang.kp.manager.common.utils.BatchUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 
 @Slf4j
 @Controller
 @RequestMapping("/dictType")
 public class DictTypeController {
-    @Autowired
+    @Resource
     private DictTypeDao dictTypeDao;
 
     /**
@@ -76,7 +73,7 @@ public class DictTypeController {
 
     @PostMapping("/save")
     @ResponseBody
-    public ResultData save(DictType dictType) {
+    public ResultData save(@RequestBody DictType dictType) {
         log.info("设置字典[新增或更新]！DictType:{}" + JSONObject.toJSONString(dictType));
         if (StringUtils.isBlank(dictType.getTypeId())) {
             //新增权限
@@ -88,7 +85,7 @@ public class DictTypeController {
 
     @PostMapping("/del")
     @ResponseBody
-    public ResultData del(DictType dictType) {
+    public ResultData del(@RequestBody DictType dictType) {
         log.info("设置字典[删除]！permission:{}" + JSONObject.toJSONString(dictType));
         if (StringUtils.isBlank(dictType.getTypeId())) {
             return ResultUtils.fail("参数异常");

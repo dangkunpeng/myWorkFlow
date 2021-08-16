@@ -12,23 +12,18 @@ import dang.kp.manager.common.utils.DateTimeUtils;
 import dang.kp.manager.common.utils.MyConstants;
 import dang.kp.manager.sys.admin.dao.BaseRoleSourceDao;
 import dang.kp.manager.sys.admin.dao.BaseSourceDao;
-import dang.kp.manager.sys.admin.dao.BaseUserRoleDao;
-import dang.kp.manager.sys.admin.dto.SourceDTO;
 import dang.kp.manager.sys.admin.pojo.BaseRoleSource;
 import dang.kp.manager.sys.admin.pojo.BaseSource;
-import dang.kp.manager.sys.admin.pojo.BaseUser;
-import dang.kp.manager.sys.admin.pojo.BaseUserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -42,12 +37,10 @@ import java.util.List;
 @Controller
 @RequestMapping("/source")
 public class BaseSourceController {
-    @Autowired
+    @Resource
     private BaseSourceDao baseSourceDao;
-    @Autowired
+    @Resource
     private BaseRoleSourceDao baseRoleSourceDao;
-    @Autowired
-    private BaseUserRoleDao baseUserRoleDao;
 
     /**
      * 功能描述: 跳到管理
@@ -116,7 +109,7 @@ public class BaseSourceController {
      */
     @PostMapping("/setSource")
     @ResponseBody
-    public ResultData save(BaseSource source) {
+    public ResultData save(@RequestBody BaseSource source) {
         log.info("设置[新增或更新]！source:" + source);
         if (StringUtils.isBlank(source.getSourceId())) {
             //新增
@@ -127,7 +120,7 @@ public class BaseSourceController {
             return ResultUtils.success("新增成功！");
         } else {
             //修改
-            BaseSource old = this.baseSourceDao.getOne(source.getSourceId());
+            BaseSource old = this.baseSourceDao.findById(source.getSourceId()).get();
             BeanUtils.copyProperties(source, old, MyConstants.SYSTEM_FIELDS);
             this.baseSourceDao.save(old);
             log.info("[更新]，结果=更新成功！");
@@ -145,7 +138,7 @@ public class BaseSourceController {
      */
     @PostMapping("/del")
     @ResponseBody
-    public ResultData del(BaseSource param) {
+    public ResultData del(@RequestBody BaseSource param) {
         log.info("删除菜单！param:{}", JSONObject.toJSONString(param));
         //删除服务类目类型
         // 删除菜单
@@ -164,49 +157,5 @@ public class BaseSourceController {
         return ResultUtils.success("删除成功！");
     }
 
-    /**
-     * 功能描述: 获取登陆用户的
-     *
-     * @param:
-     * @return:
-     * @auther: youqing
-     * @date: 2018/12/4 9:48
-     */
-    @GetMapping("/getUserPerms")
-    @ResponseBody
-    public ResultData getUserPerms() {
-        log.info("获取登陆用户的");
-        BaseUser user = (BaseUser) SecurityUtils.getSubject().getPrincipal();
-        List<SourceDTO> sourceList = Lists.newArrayList();
-        // 查询角色
-        List<BaseUserRole> userRoles = this.baseUserRoleDao.findByUserId(user.getUserId());
-        if (CollectionUtils.isEmpty(userRoles)) {
-            return ResultUtils.success(sourceList);
-        }
-        for (BaseUserRole userRole : userRoles) {
-            // 查询资源
-            List<BaseRoleSource> roleSources = this.baseRoleSourceDao.findByRoleId(userRole.getRoleId());
-            if (CollectionUtils.isEmpty(roleSources)) {
-                continue;
-            }
-            for (BaseRoleSource roleSource : roleSources) {
-                BaseSource baseSource = this.baseSourceDao.getOne(roleSource.getSourceId());
-                SourceDTO sourceDTO = new SourceDTO();
-                BeanUtils.copyProperties(baseSource, sourceDTO);
-                List<BaseSource> children = this.baseSourceDao.findByPidOrderByLineIndex(roleSource.getSourceId());
-                if (CollectionUtils.isEmpty(children)) {
-                    continue;
-                }
-                List<SourceDTO> items = Lists.newArrayList();
-                for (BaseSource child : children) {
-                    SourceDTO item = new SourceDTO();
-                    BeanUtils.copyProperties(child, item);
-                    items.add(item);
-                }
-                sourceDTO.setChildrens(items);
-                sourceList.add(sourceDTO);
-            }
-        }
-        return ResultUtils.success(sourceList);
-    }
+
 }

@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface BaseSourceDao extends JpaRepository<BaseSource, String> {
     List<BaseSource> findByPidOrderByLineIndex(String pid);
+    List<BaseSource> findBySourceIdIn(List<String> sourceIds);
+    List<BaseSource> findByPidInOrderByLineIndex(List<String> pids);
 }

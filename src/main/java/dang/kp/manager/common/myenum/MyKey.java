@@ -13,6 +13,9 @@ public enum MyKey {
     FlowStepUser("1024"),
     FlowBizLog("1025"),
     FlowBizLine("1026"),
+    K12Class("1031"),
+    K12Log("1032"),
+    K12Student("1033"),
     ;
 
     private final String value;

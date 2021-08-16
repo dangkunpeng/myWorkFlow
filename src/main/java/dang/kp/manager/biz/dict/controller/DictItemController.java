@@ -13,15 +13,12 @@ import dang.kp.manager.common.result.ResultUtils;
 import dang.kp.manager.common.utils.BatchUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,9 +26,9 @@ import java.util.Objects;
 @Controller
 @RequestMapping("/dictItem")
 public class DictItemController {
-    @Autowired
+    @Resource
     private DictItemDao dictItemDao;
-    @Autowired
+    @Resource
     private DictTypeDao dictTypeDao;
 
     /**
@@ -88,7 +85,7 @@ public class DictItemController {
 
     @PostMapping("/save")
     @ResponseBody
-    public ResultData save(DictItem dictItem) {
+    public ResultData save(@RequestBody DictItem dictItem) {
         log.info("设置字典项[新增或更新]！DictItem:{}" + JSONObject.toJSONString(dictItem));
         if (StringUtils.isBlank(dictItem.getItemId())) {
             //新增权限
@@ -100,7 +97,7 @@ public class DictItemController {
 
     @PostMapping("/del")
     @ResponseBody
-    public ResultData del(DictItem dictItem) {
+    public ResultData del(@RequestBody DictItem dictItem) {
         log.info("设置字典项[删除]！DictItem:{}" + JSONObject.toJSONString(dictItem));
         if (StringUtils.isBlank(dictItem.getItemId())) {
             return ResultUtils.fail("参数异常");

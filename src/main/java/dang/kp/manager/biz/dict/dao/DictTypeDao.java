@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DictTypeDao extends JpaRepository<DictType, String> {
     DictType findByTypeName(String typeName);
+
+    Integer countByTypeName(String typeName);
 }

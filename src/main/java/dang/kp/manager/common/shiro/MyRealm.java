@@ -3,15 +3,14 @@ package dang.kp.manager.common.shiro;
 import dang.kp.manager.sys.admin.dao.BaseUserDao;
 import dang.kp.manager.sys.admin.pojo.BaseUser;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.Resource;
 
 /**
  * @Title: MyRealm
@@ -22,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Slf4j
 public class MyRealm extends AuthorizingRealm {
-    @Autowired
+    @Resource
     private BaseUserDao baseUserDao;
 
     /**
@@ -80,7 +79,7 @@ public class MyRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         //UsernamePasswordToken用于存放提交的登录信息
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
-        log.info("用户登录认证：验证当前Subject时获取到token为：{}", ReflectionToStringBuilder.toString(token, ToStringStyle.MULTI_LINE_STYLE));
+//        log.info("用户登录认证：验证当前Subject时获取到token为：{}", ReflectionToStringBuilder.toString(token, ToStringStyle.MULTI_LINE_STYLE));
         String userName = token.getUsername();
         // 调用数据层
         BaseUser sysUser = this.baseUserDao.getUserByUserName(userName);

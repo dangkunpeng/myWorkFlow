@@ -16,15 +16,12 @@ import dang.kp.manager.sys.admin.pojo.BaseUser;
 import dang.kp.manager.sys.admin.pojo.BaseUserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -38,11 +35,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/userRole")
 public class BaseUserRoleController {
-    @Autowired
+    @Resource
     private BaseRoleDao baseRoleDao;
-    @Autowired
+    @Resource
     private BaseUserDao baseUserDao;
-    @Autowired
+    @Resource
     private BaseUserRoleDao baseUserRoleDao;
 
     /**
@@ -117,7 +114,7 @@ public class BaseUserRoleController {
      */
     @PostMapping("/setUserRole")
     @ResponseBody
-    public ResultData save(BaseUserRole source) {
+    public ResultData save(@RequestBody BaseUserRole source) {
         log.info("设置权限[新增或更新]！param:{}", JSONObject.toJSONString(source));
         if (StringUtils.isBlank(source.getUserRoleId())) {
             //新增权限
@@ -143,7 +140,7 @@ public class BaseUserRoleController {
      */
     @PostMapping("/del")
     @ResponseBody
-    public ResultData del(BaseUserRole source) {
+    public ResultData del(@RequestBody BaseUserRole source) {
         log.info("删除！param:{}", JSONObject.toJSONString(source));
         // 删除权限菜单
         this.baseUserRoleDao.deleteById(source.getUserRoleId());
