@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 /**
  * @Title: MyRealm
  * @Description:
- * @author: youqing
+ * @author: dangkp
  * @version: 1.0
  * @date: 2018/11/22 15:53
  */
@@ -29,7 +29,7 @@ public class MyRealm extends AuthorizingRealm {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/9/11 10:30
      */
     @Override
@@ -72,7 +72,7 @@ public class MyRealm extends AuthorizingRealm {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/9/11 10:32
      */
     @Override

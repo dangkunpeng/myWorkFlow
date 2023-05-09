@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @Title: RoleController
  * @Description: 角色管理
- * @author: youqing
+ * @author: dangkp
  * @version: 1.0
  * @date: 2018/11/21 13:43
  */
@@ -59,7 +59,7 @@ public class BaseRoleController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/21 14:29
      */
     @PostMapping(value = "/getRoleList")
@@ -95,7 +95,7 @@ public class BaseRoleController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/12/3 10:54
      */
     @PostMapping("/setRole")
@@ -122,7 +122,7 @@ public class BaseRoleController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/21 16:00
      */
     @PostMapping("/del")

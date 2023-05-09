@@ -27,7 +27,7 @@ import java.util.Deque;
 /**
  * @Title: KickouSessionFilter
  * @Description: 进行用户访问控制
- * @author: youqing
+ * @author: dangkp
  * @version: 1.0
  * @date: 2018/11/23 9:37
  */

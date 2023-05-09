@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @Title: SourceController
  * @Description: 资源管理
- * @author: youqing
+ * @author: dangkp
  * @version: 1.0
  * @date: 2018/11/29 18:16
  */
@@ -66,7 +66,7 @@ public class BaseRoleSourceController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/30 10:30
      */
     @PostMapping("/roleSourceList")
@@ -107,7 +107,7 @@ public class BaseRoleSourceController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/30 9:42
      */
     @PostMapping("/setRoleSource")
@@ -133,7 +133,7 @@ public class BaseRoleSourceController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/30 12:02
      */
     @PostMapping("/del")

@@ -6,7 +6,7 @@ import org.apache.shiro.util.ByteSource;
 /**
  * @Title: DigestUtils
  * @Description:
- * @author: youqing
+ * @author: dangkp
  * @version: 1.0
  * @date: 2018/9/11 15:09
  */
@@ -16,7 +16,7 @@ public class DigestUtils {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/9/11 15:11
      */
     public static String Md5(String userName, String password) {

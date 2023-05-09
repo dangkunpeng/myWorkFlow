@@ -67,7 +67,7 @@ public class DateTimeUtils {
      *
      * @param: 获取当前系统时间 yyyy-MM-dd HH:mm:ss
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/5/26 9:59
      */
     public static String now() {
@@ -79,7 +79,7 @@ public class DateTimeUtils {
      *
      * @param: 获取当前系统时间 yyyy-MM-dd HH:mm:ss
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/5/26 9:59
      */
     public static String nowSimple() {

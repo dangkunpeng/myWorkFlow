@@ -4,14 +4,11 @@ import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import dang.kp.manager.common.filter.KickoutSessionFilter;
 import dang.kp.manager.common.shiro.MyRealm;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.ehcache.CacheException;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.DiskStoreConfiguration;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
-import org.apache.shiro.io.ResourceUtils;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
@@ -22,7 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.Filter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,7 +26,7 @@ import java.util.Map;
 /**
  * @Title: ShiroConfig
  * @Description: shiro配置
- * @author: youqing
+ * @author: dangkp
  * @version: 1.0
  * @date: 2018/9/11 10:33
  */
@@ -170,7 +166,7 @@ public class ShiroConfig {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/23 10:22
      */
     public KickoutSessionFilter kickoutSessionFilter() {
@@ -238,7 +234,7 @@ public class ShiroConfig {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/23 10:31
      */
     @Bean
@@ -265,7 +261,7 @@ public class ShiroConfig {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/23 10:34
      */
     @Bean

@@ -56,7 +56,7 @@ public class TaskConfig implements SchedulingConfigurer {
                 BaseTask baseTask = (BaseTask) application.getBean(item.getText());
                 baseTask.run();
             } catch (BeansException e) {
-                log.info("{}.run has Exception {}", e);
+                log.info("{}.run has Exception {}", item.getText(), e);
             }
         };
     }
@@ -74,7 +74,7 @@ public class TaskConfig implements SchedulingConfigurer {
             log.info("cron = {} is Scheduled", cron);
             //2.2 合法性校验.
             if (StringUtils.isEmpty(cron)) {
-                log.info("TaskTrigger is blank", cron);
+                log.info("TaskTrigger is blank ");
                 return null;
             }
             //2.3 返回执行周期(Date)

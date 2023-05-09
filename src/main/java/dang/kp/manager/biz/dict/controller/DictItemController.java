@@ -50,7 +50,7 @@ public class DictItemController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/30 10:30
      */
     @PostMapping("/list")

@@ -5,7 +5,7 @@ import lombok.Data;
 /**
  * @Title: UserDTO
  * @Description:
- * @author: youqing
+ * @author: dangkp
  * @version: 1.0
  * @date: 2018/11/21 11:19
  */

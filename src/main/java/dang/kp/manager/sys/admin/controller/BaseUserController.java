@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * @Title: UserController
  * @Description: 系统用户管理
- * @author: youqing
+ * @author: dangkp
  * @version: 1.0
  * @date: 2018/11/20 15:17
  */
@@ -68,7 +68,7 @@ public class BaseUserController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/22 15:47
      */
     @RequestMapping("/login")
@@ -112,7 +112,7 @@ public class BaseUserController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/22 17:26
      */
     @RequestMapping("/setPswd")
@@ -138,7 +138,7 @@ public class BaseUserController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/21 13:50
      */
     @RequestMapping("/init")
@@ -154,7 +154,7 @@ public class BaseUserController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/21 11:10
      */
     @RequestMapping(value = "/getUserList", method = RequestMethod.POST)
@@ -186,7 +186,7 @@ public class BaseUserController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/22 10:14
      */
     @RequestMapping(value = "/setUser", method = RequestMethod.POST)
@@ -234,7 +234,7 @@ public class BaseUserController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/11/22 11:59
      */
     @RequestMapping(value = "/del", method = RequestMethod.POST)
@@ -251,7 +251,7 @@ public class BaseUserController {
      *
      * @param:
      * @return:
-     * @auther: youqing
+     * @auther: dangkp
      * @date: 2018/12/4 9:48
      */
     @GetMapping("/role/source")

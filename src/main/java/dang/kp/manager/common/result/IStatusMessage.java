@@ -3,7 +3,7 @@ package dang.kp.manager.common.result;
 /**
  * @Title: IStatusMessage
  * @Description: 响应状态信息
- * @author: youqing
+ * @author: dangkp
  * @version: 1.0
  * @date: 2018/11/23 9:50
  */
