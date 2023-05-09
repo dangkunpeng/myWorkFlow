@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ManagerApplication {
     public static void main(String[] args) {
-        log.info("starting app");
+        log.info("App starting...");
         SpringApplication.run(ManagerApplication.class, args);
-        log.info("started app");
+        log.info("App started!!!");
     }
 }
