@@ -26,6 +26,7 @@ public class TaskConfig implements SchedulingConfigurer {
 
     @Resource
     private DictApi dictApi;
+
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         log.info("configureTasks");

@@ -36,7 +36,7 @@ public class StartUpTask implements StartUpService {
         DictItem item0102 = DictUtils.getItem(type01, 2, "0 0 0/3 * * ?", "exchangeData");
         DictItem item0103 = DictUtils.getItem(type01, 3, "0 0 1   * * ?", "k12NewLog");
         this.dictTypeDao.saveAll(Lists.newArrayList(type01));
-        this.dictItemDao.saveAll(Lists.newArrayList(item0101, item0102,item0103));
+        this.dictItemDao.saveAll(Lists.newArrayList(item0101, item0102, item0103));
         return ResultUtils.success("done");
     }
 }

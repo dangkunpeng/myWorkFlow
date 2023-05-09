@@ -28,7 +28,7 @@ public class IndexController {
     public String tologin(ModelMap model) {
         log.info("定向登陆页");
         LoginDTO loginDTO = new LoginDTO();
-        if (StringUtils.contains(profiles,"dev")) {
+        if (StringUtils.contains(profiles, "dev")) {
             loginDTO.setPassword("root");
             loginDTO.setUsername("root");
             model.put("dev", loginDTO);

@@ -10,7 +10,9 @@ import java.util.List;
 public interface FlowStepUserDao extends JpaRepository<FlowStepUser, String> {
 
     List<FlowStepUser> findByStepId(String stepId);
+
     List<FlowStepUser> findByUserId(String userId);
+
     List<FlowStepUser> findByStepIdIn(List<String> stepIds);
 
 }

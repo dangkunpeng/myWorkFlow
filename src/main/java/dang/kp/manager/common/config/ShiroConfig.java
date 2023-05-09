@@ -41,18 +41,18 @@ public class ShiroConfig {
     @Bean
     public ShiroFilterFactoryBean shiroFilterFactoryBean(DefaultWebSecurityManager securityManager) {
         ShiroFilterFactoryBean bean = new ShiroFilterFactoryBean();
-//        log.info("Shiro拦截器工厂类注入开始");
+        log.info("Shiro拦截器工厂类注入开始");
         // 配置shiro安全管理器 SecurityManager
         bean.setSecurityManager(securityManager);
         //添加kickout认证
-        HashMap<String, Filter> hashMap = new HashMap<String, Filter>();
+        HashMap<String, Filter> hashMap = new HashMap<>();
         hashMap.put("kickout", kickoutSessionFilter());
         bean.setFilters(hashMap);
         // 指定要求登录时的链接
         bean.setLoginUrl("/login");
         // 登录成功后要跳转的链接
         bean.setSuccessUrl("/home");
-        // 未授权时跳转的界面;
+        // 未授权时跳转的界面
         bean.setUnauthorizedUrl("/error");
         // filterChainDefinitions拦截器map必须用：LinkedHashMap，因为它必须保证有序
         Map<String, String> filterMap = new LinkedHashMap<>();
@@ -87,7 +87,7 @@ public class ShiroConfig {
         filterMap.put("/*/*/*/**", "authc");
         // 添加 shiro 过滤器
         bean.setFilterChainDefinitionMap(filterMap);
-//        log.info("Shiro拦截器工厂类注入成功");
+        log.info("Shiro拦截器工厂类注入成功");
         return bean;
     }
 
@@ -99,9 +99,9 @@ public class ShiroConfig {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         // 关联realm
         manager.setRealm(shiroRealm());
-        //注入ehcache缓存管理器;
+        // 注入ehcache缓存管理器
         manager.setCacheManager(ehCacheManager());
-        //注入session管理器;
+        // 注入session管理器
         manager.setSessionManager(sessionManager());
         //注入Cookie记住我管理器
         manager.setRememberMeManager(rememberMeManager());
@@ -127,8 +127,10 @@ public class ShiroConfig {
     @Bean
     public HashedCredentialsMatcher hashedCredentialsMatcher() {
         HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        hashedCredentialsMatcher.setHashAlgorithmName("MD5");// 散列算法:这里使用MD5算法;
-        hashedCredentialsMatcher.setHashIterations(2);// 散列的次数，比如散列两次，相当于 // md5(md5(""));
+        // 散列算法:这里使用MD5算法
+        hashedCredentialsMatcher.setHashAlgorithmName("MD5");
+        // 散列的次数，比如散列两次，相当于 md5(md5(""))
+        hashedCredentialsMatcher.setHashIterations(2);
         hashedCredentialsMatcher.setStoredCredentialsHexEncoded(true);
         return hashedCredentialsMatcher;
     }
@@ -139,12 +141,12 @@ public class ShiroConfig {
     // 创建 Cookie
     @Bean
     public SimpleCookie remeberMeCookie() {
-//        log.info("记住我，设置cookie过期时间！");
+        log.info("记住我，设置cookie过期时间！");
         SimpleCookie cookie = new SimpleCookie("rememberMe");
         // //记住我cookie生效时间30天 ,单位秒  [10天]
         cookie.setMaxAge(864000);
         // 设置只读模型
-        //cookie.setHttpOnly(true);
+        cookie.setHttpOnly(true);
         return cookie;
     }
 
@@ -155,7 +157,7 @@ public class ShiroConfig {
      */
     @Bean
     public CookieRememberMeManager rememberMeManager() {
-//        log.debug("配置cookie记住我管理器！");
+        log.info("配置cookie记住我管理器！");
         CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
         cookieRememberMeManager.setCookie(remeberMeCookie());
         return cookieRememberMeManager;
@@ -268,7 +270,6 @@ public class ShiroConfig {
     public SimpleCookie sessionIdCookie() {
         //DefaultSecurityManager
         SimpleCookie simpleCookie = new SimpleCookie();
-        //sessionManager.setCacheManager(ehCacheManager());
         //如果在Cookie中设置了"HttpOnly"属性，那么通过程序(JS脚本、Applet等)将无法读取到Cookie信息，这样能有效的防止XSS攻击。
         simpleCookie.setHttpOnly(true);
         simpleCookie.setName("SHRIOSESSIONID");

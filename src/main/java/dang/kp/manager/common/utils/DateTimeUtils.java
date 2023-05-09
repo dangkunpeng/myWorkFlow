@@ -52,6 +52,7 @@ public class DateTimeUtils {
     public static String getSomeYears(Integer years) {
         return SDF_FULL_SHOW.format(nextSomeYears(years));
     }
+
     public static Date nextSomeYears(Integer years) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.YEAR, years);
@@ -74,6 +75,7 @@ public class DateTimeUtils {
         String date = SDF_FULL_SHOW.format(System.currentTimeMillis());
         return date;
     }
+
     /**
      * 功能描述:
      *
@@ -86,6 +88,7 @@ public class DateTimeUtils {
         String date = SDF_YYYYMMDD.format(System.currentTimeMillis());
         return date;
     }
+
     public static int nowWeekDay() {
         Calendar cal = Calendar.getInstance();
         return cal.get(Calendar.DAY_OF_WEEK);

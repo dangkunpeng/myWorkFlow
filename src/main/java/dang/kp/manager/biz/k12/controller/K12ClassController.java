@@ -35,6 +35,7 @@ public class K12ClassController {
     private K12LogDao k12LogDao;
     @Resource
     private DictApi dictApi;
+
     /**
      * 跳转到页面
      *
@@ -58,6 +59,7 @@ public class K12ClassController {
         model.put("weeks", weeks);
         return "/biz/k12/k12Class";
     }
+
     @PostMapping("/save")
     @ResponseBody
     public ResultData save(@RequestBody K12Class param) {
@@ -79,6 +81,7 @@ public class K12ClassController {
         this.k12ClassDao.deleteById(param.getClassId());
         return ResultUtils.success("success");
     }
+
     /**
      * 功能描述: 获取列表
      *

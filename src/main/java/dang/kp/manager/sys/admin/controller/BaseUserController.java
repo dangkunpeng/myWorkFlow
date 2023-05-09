@@ -275,7 +275,7 @@ public class BaseUserController {
         // 获取二级资源列表
         List<BaseSource> sourceChildren = this.baseSourceDao.findByPidInOrderByLineIndex(sourceIds);
         // 二级资源分组
-        Map<String, List<BaseSource>> sourceGroup =sourceChildren.stream().collect(Collectors.groupingBy(BaseSource::getPid));
+        Map<String, List<BaseSource>> sourceGroup = sourceChildren.stream().collect(Collectors.groupingBy(BaseSource::getPid));
         // 遍历
         for (BaseSource source : sources) {
             // 获取二级菜单

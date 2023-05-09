@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface BaseRoleSourceDao extends JpaRepository<BaseRoleSource, String> {
     List<BaseRoleSource> findByRoleId(String roleId);
+
     List<BaseRoleSource> findByRoleIdIn(List<String> roleIds);
 
     List<BaseRoleSource> findBySourceId(String sourceId);

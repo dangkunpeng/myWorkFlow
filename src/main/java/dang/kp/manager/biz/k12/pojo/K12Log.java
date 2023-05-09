@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="k12_log")
+@Table(name = "k12_log")
 public class K12Log {
     @Id
     private String logId;

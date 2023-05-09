@@ -38,6 +38,7 @@ public class K12StudentController {
     private DictItemDao dictItemDao;
     @Resource
     private DictApi dictApi;
+
     /**
      * 跳转到页面
      *
@@ -53,6 +54,7 @@ public class K12StudentController {
         model.put("products", products);
         return "/biz/k12/K12Student";
     }
+
     @PostMapping("/save")
     @ResponseBody
     public ResultData save(@RequestBody K12Student param) {
@@ -81,6 +83,7 @@ public class K12StudentController {
         this.K12StudentDao.deleteById(param.getStudentId());
         return ResultUtils.success("success");
     }
+
     /**
      * 功能描述: 获取列表
      *
@@ -114,7 +117,7 @@ public class K12StudentController {
         // 查询模板
         Example<K12Student> example = Example.of(param, matcher);
         // 获取服务类目列表
-        Sort sort = Sort.by(Sort.Order.asc("parentPhone"),Sort.Order.asc("dateEnd"));
+        Sort sort = Sort.by(Sort.Order.asc("parentPhone"), Sort.Order.asc("dateEnd"));
         // 获取角色列表
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
         Page<K12Student> pageResult = this.K12StudentDao.findAll(example, pageable);
