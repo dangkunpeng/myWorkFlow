@@ -6,6 +6,9 @@ import dang.kp.manager.common.shiro.MyRealm;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.DiskStoreConfiguration;
+import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.io.ResourceUtils;
@@ -198,15 +201,35 @@ public class ShiroConfig {
     public EhCacheManager ehCacheManager() {
         log.debug("shiro整合ehcache缓存：ShiroConfiguration.getEhCacheManager()");
         EhCacheManager ehcache = new EhCacheManager();
-        CacheManager cacheManager = CacheManager.getCacheManager("shiro");
-        if (cacheManager == null) {
-            try {
-                cacheManager = CacheManager.create(ResourceUtils.getInputStreamForPath("classpath:config/ehcache.xml"));
-            } catch (CacheException | IOException e) {
-                e.printStackTrace();
-            }
-        }
-        ehcache.setCacheManager(cacheManager);
+        net.sf.ehcache.config.Configuration config = new net.sf.ehcache.config.Configuration()
+                .diskStore(new DiskStoreConfiguration().path("java.io.tmpdir"))
+                .defaultCache(new CacheConfiguration("default-cache", 10000)
+                        .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LRU)
+                        .maxElementsOnDisk(10000000)
+                        .timeToLiveSeconds(120)
+                        .timeToIdleSeconds(120)
+                        .diskExpiryThreadIntervalSeconds(120))
+                .cache(new CacheConfiguration("shiro", 10000)
+                        .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LRU)
+                        .maxElementsOnDisk(10000000)
+                        .timeToLiveSeconds(120)
+                        .timeToIdleSeconds(120)
+                        .diskExpiryThreadIntervalSeconds(120))
+                .cache(new CacheConfiguration("shiro-activeSessionCache", 10000)
+                        .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LRU)
+                        .maxElementsOnDisk(10000000)
+                        .timeToLiveSeconds(86400)
+                        .timeToIdleSeconds(86400)
+                        .diskExpiryThreadIntervalSeconds(120))
+                .cache(new CacheConfiguration("passwordRetryCache", 10000)
+                        .timeToLiveSeconds(0)
+                        .timeToIdleSeconds(120)
+                        .eternal(false)
+                        .overflowToDisk(false)
+                        .statistics(false)
+                        .diskExpiryThreadIntervalSeconds(120));
+
+        ehcache.setCacheManager(net.sf.ehcache.CacheManager.create(config));
         return ehcache;
     }
 
