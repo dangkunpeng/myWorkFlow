@@ -75,7 +75,6 @@ public class BaseUserController {
     @ResponseBody
     public ResultData login(HttpServletRequest request, @RequestBody LoginDTO loginDTO, HttpSession session) {
         log.info("进行登陆{}", JSONObject.toJSONString(loginDTO));
-        Map<String, Object> data = new HashMap();
         // 使用 shiro 进行登录
         Subject subject = SecurityUtils.getSubject();
         String userName = loginDTO.getUsername().trim();
